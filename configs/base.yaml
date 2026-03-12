@@ -1,0 +1,69 @@
+# XRayGPT Base Configuration
+
+# Data
+data:
+  dataset: "iu_xray"
+  data_dir: "data/raw/iu_xray"
+  processed_dir: "data/processed/iu_xray"
+  image_size: 224
+  max_length: 128          # max report tokens
+  train_split: 0.8
+  val_split: 0.1
+  test_split: 0.1
+  num_workers: 4
+  view: "frontal"          # frontal | lateral | both
+
+# Vision encoder
+vision:
+  model_name: "vit_base_patch16_224"   # timm model name
+  pretrained: true
+  hidden_size: 768
+  freeze: true             # freeze encoder during initial training
+  num_prefix_tokens: 8     # number of visual prefix tokens for LM
+
+# Projection
+projection:
+  hidden_size: 768
+  num_layers: 2            # MLP depth
+  dropout: 0.1
+
+# Text decoder
+text:
+  model_name: "gpt2"       # HuggingFace model name
+  freeze_embeddings: false
+  max_new_tokens: 128
+
+# Training
+training:
+  batch_size: 16
+  learning_rate: 5.0e-5
+  weight_decay: 0.01
+  num_epochs: 30
+  warmup_steps: 500
+  gradient_accumulation_steps: 2
+  max_grad_norm: 1.0
+  seed: 42
+  fp16: true
+  save_every: 5            # save checkpoint every N epochs
+  eval_every: 1            # evaluate every N epochs
+  patience: 7              # early stopping patience
+
+# Generation
+generation:
+  strategy: "greedy"       # greedy | beam | nucleus
+  beam_size: 4
+  temperature: 1.0
+  top_p: 0.9
+  repetition_penalty: 1.2
+
+# Paths
+paths:
+  checkpoint_dir: "checkpoints"
+  output_dir: "outputs"
+  log_dir: "outputs/logs"
+
+# Logging
+logging:
+  use_wandb: false
+  project_name: "xraygpt"
+  log_every: 50            # log every N steps
